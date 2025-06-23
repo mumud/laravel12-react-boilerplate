@@ -18,14 +18,32 @@ class CompanyController extends Controller
         $search = $request->input('search');
         $sort = $request->input('sort', 'created_at'); // default sort
         $direction = $request->input('direction', 'desc'); // default direction
+        $filterField = $request->input('filterField');
+        $filterOperator = $request->input('filterOperator');
+        $filterValue = $request->input('filterValue');
 
         $query = Company::query();
 
+        // Global search
         if ($search) {
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhere('code', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('code', 'like', "%{$search}%");
+            });
         }
 
+        // Advanced filter
+        if ($filterField && $filterOperator && $filterValue) {
+            if (in_array($filterField, ['name', 'code'])) {
+                if ($filterOperator === 'equals') {
+                    $query->where($filterField, '=', $filterValue);
+                } elseif ($filterOperator === 'contains') {
+                    $query->where($filterField, 'like', "%{$filterValue}%");
+                }
+            }
+        }
+
+        // Sorting
         if (in_array($sort, ['name', 'code', 'created_at']) && in_array($direction, ['asc', 'desc'])) {
             $query->orderBy($sort, $direction);
         }
@@ -38,6 +56,9 @@ class CompanyController extends Controller
                 'search' => $search,
                 'sort' => $sort,
                 'direction' => $direction,
+                'filterField' => $filterField,
+                'filterOperator' => $filterOperator,
+                'filterValue' => $filterValue,
             ],
         ]);
     }
