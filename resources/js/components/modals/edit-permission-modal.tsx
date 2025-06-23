@@ -9,15 +9,16 @@ import { SaveIcon } from 'lucide-react';
 import { Toaster } from 'sonner';
 import { Input } from '../ui/input';
 
-export const CreatePermissionModal = () => {
-    const { isOpen, onClose, type } = useModal();
-    const isModalOpen = isOpen && type === 'createPermission';
-    const form = useForm({ name: '', description: '' });
+export const EditPermissionModal = () => {
+    const { isOpen, onClose, type, data } = useModal();
+    const { permission } = data;
+    const isModalOpen = isOpen && type === 'editPermission';
+    const form = useForm({ name: permission?.name, description: permission?.description });
     const isLoading = false;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        form.post(route('permissions.store'), {
+        form.put(route('permissions.update', permission?.id), {
             onSuccess: () => {
                 form.reset();
                 onClose();
@@ -31,15 +32,15 @@ export const CreatePermissionModal = () => {
         onClose();
     };
 
+    console.log('mounted');
+
     return (
         <>
             <Dialog open={isModalOpen} onOpenChange={handleClose}>
                 <DialogContent className="overflow-hidden bg-white p-0 text-black">
                     <DialogHeader className="px-6 pt-8">
-                        <DialogTitle className="text-center text-2xl font-bold">Create Permission</DialogTitle>
-                        <DialogDescription className="text-center text-zinc-500">
-                            Give your permission a name and fill the description.
-                        </DialogDescription>
+                        <DialogTitle className="text-center text-2xl font-bold">Edit Permission</DialogTitle>
+                        <DialogDescription className="text-center text-zinc-500">Edit your permission.</DialogDescription>
                     </DialogHeader>
                     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
                         <div className="space-y-6 px-6">
@@ -58,7 +59,7 @@ export const CreatePermissionModal = () => {
                         </div>
                         <DialogFooter className="bg-gray-100 px-6 py-4">
                             <Button disabled={isLoading}>
-                                <SaveIcon /> Save Permission
+                                <SaveIcon /> Save Change
                             </Button>
                         </DialogFooter>
                     </form>

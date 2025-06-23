@@ -1,7 +1,7 @@
 import { IPermission } from '@/types/permission';
 import { create } from 'zustand';
 
-export type ModalType = 'createPermission';
+export type ModalType = 'createPermission' | 'editPermission';
 
 interface ModalData {
     permission?: IPermission;

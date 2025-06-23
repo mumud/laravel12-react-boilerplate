@@ -1,4 +1,5 @@
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { groupBy } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
 import clsx from 'clsx';
@@ -9,7 +10,7 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
     const page = usePage();
     return (
         <SidebarGroup className="px-2 py-0">
-            <SidebarGroupLabel>Platform</SidebarGroupLabel>
+            <SidebarGroupLabel>App Modul</SidebarGroupLabel>
             <SidebarMenu>
                 {items.map((item) =>
                     item.children ? (
@@ -54,15 +55,23 @@ function DropdownNavItem({ item }: { item: NavItem }) {
             </SidebarMenuItem>
 
             {open &&
-                item.children?.map((child) => (
-                    <SidebarMenuItem key={child.title} className="pl-4">
-                        <SidebarMenuButton asChild isActive={page.url.startsWith(child.href!)} tooltip={{ children: child.title }}>
-                            <Link href={child.href!} prefetch>
-                                {child.icon && <child.icon size={14} />}
-                                <span>{child.title}</span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
+                Object.entries(groupBy(item.children ?? [], (child) => child.group || '')).map(([groupName, groupItems]) => (
+                    <div key={groupName} className="pl-4">
+                        {groupName !== '' && (
+                            <div className="mt-2 mb-1 pl-2 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{groupName}</div>
+                        )}
+
+                        {groupItems.map((child) => (
+                            <SidebarMenuItem key={child.title} className="pl-2">
+                                <SidebarMenuButton asChild isActive={page.url.startsWith(child.href!)} tooltip={{ children: child.title }}>
+                                    <Link href={child.href!} prefetch>
+                                        {child.icon && <child.icon size={14} />}
+                                        <span>{child.title}</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
+                    </div>
                 ))}
         </>
     );
