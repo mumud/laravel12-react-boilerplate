@@ -10,7 +10,7 @@ class ModuleServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $modules = File::directories(app_path('Modules'));
+        $modules = File::directories(base_path('modules'));
 
         foreach ($modules as $modulePath) {
             $moduleName = basename($modulePath);

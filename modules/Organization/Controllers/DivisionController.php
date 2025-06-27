@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Modules\Organization\Controllers;
+namespace Modules\Organization\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Organization\Models\Company;
-use App\Modules\Organization\Requests\StoreCompanyRequest;
-use App\Modules\Organization\Requests\UpdateCompanyRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Organization\Models\Division;
+use Modules\Organization\Requests\StoreDivisionRequest;
+use Modules\Organization\Requests\UpdateDivisionRequest;
 
-class CompanyController extends Controller
+class DivisionController extends Controller
 {
     public function index(Request $request): Response
     {
@@ -22,7 +22,7 @@ class CompanyController extends Controller
         $filterOperator = $request->input('filterOperator');
         $filterValue = $request->input('filterValue');
 
-        $query = Company::query();
+        $query = Division::query();
 
         // Global search
         if ($search) {
@@ -48,10 +48,10 @@ class CompanyController extends Controller
             $query->orderBy($sort, $direction);
         }
 
-        $companies = $query->paginate(10)->withQueryString();
+        $divisions = $query->paginate(10)->withQueryString();
 
-        return Inertia::render('organization/company/index', [
-            'companies' => $companies,
+        return Inertia::render('organization/division/index', [
+            'divisions' => $divisions,
             'filters' => [
                 'search' => $search,
                 'sort' => $sort,
@@ -65,31 +65,31 @@ class CompanyController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('organization/company/create');
+        return Inertia::render('organization/division/create');
     }
 
-    public function store(StoreCompanyRequest $request): RedirectResponse
+    public function store(StoreDivisionRequest $request): RedirectResponse
     {
-        Company::create($request->validated());
-        return redirect()->route('companies.index')->with('success', 'Company created.');
+        Division::create($request->validated());
+        return redirect()->route('divisions.index')->with('success', 'Division created.');
     }
 
-    public function edit(Company $company): Response
+    public function edit(Division $division): Response
     {
-        return Inertia::render('organization/company/edit', [
-            'company' => $company,
+        return Inertia::render('organization/division/edit', [
+            'division' => $division,
         ]);
     }
 
-    public function update(UpdateCompanyRequest $request, Company $company): RedirectResponse
+    public function update(UpdateDivisionRequest $request, Division $division): RedirectResponse
     {
-        $company->update($request->validated());
-        return redirect()->route('companies.index')->with('success', 'Company updated.');
+        $division->update($request->validated());
+        return redirect()->route('divisions.index')->with('success', 'Division updated.');
     }
 
-    public function destroy(Company $company): RedirectResponse
+    public function destroy(Division $division): RedirectResponse
     {
-        $company->delete();
-        return redirect()->route('companies.index')->with('success', 'Company deleted.');
+        $division->delete();
+        return redirect()->route('divisions.index')->with('success', 'Division deleted.');
     }
 }
