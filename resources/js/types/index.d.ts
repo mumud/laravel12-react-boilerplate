@@ -1,3 +1,4 @@
+import { PageProps } from '@inertiajs/inertia';
 import { LucideIcon } from 'lucide-react';
 import type { Config } from 'ziggy-js';
 
@@ -31,6 +32,8 @@ export interface SharedData {
     ziggy: Config & { location: string };
     sidebarOpen: boolean;
     [key: string]: unknown;
+    locale: 'en' | 'id';
+    translations: Record<string, string>;
 }
 
 export interface User {
@@ -65,3 +68,12 @@ export interface PaginatedResponse<T> {
     to: number | null;
     total: number;
 }
+
+export type CustomPageProps = PageProps & {
+    flash: {
+        success?: string;
+        error?: string;
+        info?: string;
+        warning?: string;
+    };
+};

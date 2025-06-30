@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 
@@ -25,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
                 'success' => session('success'),
                 'error' => session('error'),
             ],
+            'locale' => fn() => app()->getLocale(),
+            'translations' => fn() => trans('messages', [], app()->getLocale()),
         ]);
     }
 }

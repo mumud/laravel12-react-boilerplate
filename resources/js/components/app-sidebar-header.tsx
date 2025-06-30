@@ -1,13 +1,14 @@
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { UserMenuContent } from '@/components/user-menu-content';
 import { useInitials } from '@/hooks/use-initials';
+import { useLang } from '@/hooks/use-lang';
 import { type BreadcrumbItem as BreadcrumbItemType, type SharedData } from '@/types';
-import { usePage } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Bell } from 'lucide-react';
 import { SearchTrigger } from './search-trigger';
 
@@ -18,9 +19,22 @@ const notifications = [
 ];
 
 export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: BreadcrumbItemType[] }) {
+    const { t } = useLang();
     const page = usePage<SharedData>();
     const { auth } = page.props;
     const getInitials = useInitials();
+
+    const switchLanguage = (lang: string) => {
+        const currentUrl = page.url.split('?')[0]; // hanya path tanpa query string
+        router.get(
+            currentUrl,
+            { lang },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
+    };
 
     return (
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-sidebar-border/50 px-6 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 md:px-4">
@@ -49,7 +63,7 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-72 p-0">
-                                    <div className="border-b p-2 text-sm font-semibold text-muted-foreground">Notifications</div>
+                                    <div className="border-b p-2 text-sm font-semibold text-muted-foreground">{t('notification')}</div>
                                     <div className="max-h-64 overflow-y-auto">
                                         {notifications.map((notif) => (
                                             <div key={notif.id} className="cursor-pointer border-b p-3 hover:bg-muted">
@@ -62,9 +76,22 @@ export function AppSidebarHeader({ breadcrumbs = [] }: { breadcrumbs?: Breadcrum
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </TooltipTrigger>
-                        <TooltipContent>Notifications</TooltipContent>
+                        <TooltipContent>{t('notification')}</TooltipContent>
                     </Tooltip>
                 </TooltipProvider>
+
+                {/* Language Switcher */}
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="uppercase">
+                            {page.props.locale}
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => switchLanguage('en')}>🇺🇸 English</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => switchLanguage('id')}>🇮🇩 Bahasa Indonesia</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
 
                 {/* User Menu */}
                 <DropdownMenu>

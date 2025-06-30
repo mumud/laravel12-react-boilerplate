@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Organization\Requests;
+namespace App\Http\Requests\Organizations;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -11,7 +11,7 @@ class StoreDivisionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->can('create division');
     }
 
     /**
@@ -22,7 +22,11 @@ class StoreDivisionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'company_id' => ['required', 'exists:companies,id'],
+            'name' => ['required', 'string'],
+            'code' => ['required', 'string', 'unique:divisions,code'],
+            'description' => ['nullable', 'string'],
+            'status' => ['required', 'in:active,inactive'],
         ];
     }
 }

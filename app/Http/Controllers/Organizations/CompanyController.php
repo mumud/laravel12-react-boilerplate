@@ -1,11 +1,11 @@
 <?php
 
-namespace Modules\Organization\Controllers;
+namespace App\Http\Controllers\Organizations;
 
 use App\Http\Controllers\Controller;
-use Modules\Organization\Models\Company;
-use Modules\Organization\Requests\StoreCompanyRequest;
-use Modules\Organization\Requests\UpdateCompanyRequest;
+use App\Http\Requests\Organizations\StoreCompanyRequest;
+use App\Http\Requests\Organizations\UpdateCompanyRequest;
+use App\Models\Organizations\Company;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,6 +15,10 @@ class CompanyController extends Controller
 {
     public function index(Request $request): Response
     {
+        if (!$request->user()->can('view company')) {
+            abort(403, 'Unauthorized');
+        }
+
         $search = $request->input('search');
         $sort = $request->input('sort', 'created_at'); // default sort
         $direction = $request->input('direction', 'desc'); // default direction
@@ -60,6 +64,11 @@ class CompanyController extends Controller
                 'filterOperator' => $filterOperator,
                 'filterValue' => $filterValue,
             ],
+            'can' => [
+                'create' => $request->user()->can('create company'),
+                'update' => $request->user()->can('update company'),
+                'delete' => $request->user()->can('delete company'),
+            ],
         ]);
     }
 
@@ -91,5 +100,14 @@ class CompanyController extends Controller
     {
         $company->delete();
         return redirect()->route('companies.index')->with('success', 'Company deleted.');
+    }
+
+    public function options()
+    {
+        $companies = Company::select('id', 'name', 'code')->orderBy('name')->get();
+
+        return response()->json([
+            'companies' => $companies,
+        ]);
     }
 }

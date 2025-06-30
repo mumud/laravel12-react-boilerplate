@@ -1,8 +1,9 @@
 <?php
 
-namespace Modules\Organization\Requests;
+namespace App\Http\Requests\Organizations;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateDivisionRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateDivisionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->can('update division');
     }
 
     /**
@@ -22,7 +23,14 @@ class UpdateDivisionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string'],
+            'code' => [
+                'required',
+                'string',
+                Rule::unique('divisions', 'code')->ignore($this->route('division')),
+            ],
+            'description' => ['nullable', 'string'],
+            'status' => ['required', 'in:active,inactive'],
         ];
     }
 }

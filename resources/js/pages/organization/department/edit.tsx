@@ -8,24 +8,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem } from '@/types';
-import { IDivision } from '@/types/division';
+import { IDepartment } from '@/types/department';
 import { Head, useForm } from '@inertiajs/react';
 import { SaveIcon, Trash2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Organization', href: '#!' },
-    { title: 'Division', href: '/organizations/divisions' },
+    { title: 'Department', href: '/organizations/departments' },
     { title: 'Edit', href: '#!' },
 ];
 
-export default function EditDivision({ division, activities }: { division: IDivision; activities: IActivity[] }) {
+export default function EditDepartment({ department, activities }: { department: IDepartment; activities: IActivity[] }) {
     const formRef = useRef<HTMLFormElement>(null);
     const { data, setData, put, processing, errors } = useForm({
-        name: division.name,
-        code: division.code,
-        description: division.description || '',
-        status: division.status,
+        name: department.name,
+        code: department.code,
+        description: department.description || '',
+        status: department.status,
     });
 
     const handleConfirmSubmit = () => {
@@ -36,7 +36,7 @@ export default function EditDivision({ division, activities }: { division: IDivi
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route('divisions.update', division.id));
+        put(route('departments.update', department.id));
     };
 
     const [shiftApprovers, setShiftApprovers] = useState<string[]>([]);
@@ -46,14 +46,14 @@ export default function EditDivision({ division, activities }: { division: IDivi
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Edit Division" />
+            <Head title="Edit Department" />
             <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between border-b px-4 py-2">
                     <div>
                         <h1 className="text-lg font-bold">
-                            {division.code} - {division.name}
+                            {department.code} - {department.name}
                         </h1>
-                        <p className="text-sm text-muted-foreground">Edit divisions</p>
+                        <p className="text-sm text-muted-foreground">Edit departments</p>
                     </div>
                     <ConfirmDialog
                         trigger={
@@ -62,7 +62,7 @@ export default function EditDivision({ division, activities }: { division: IDivi
                             </Button>
                         }
                         title="Save Changes"
-                        description="Are you sure you want to save changes to this division?"
+                        description="Are you sure you want to save changes to this department?"
                         confirmText="Yes, Save"
                         onConfirm={handleConfirmSubmit}
                     />
@@ -72,7 +72,7 @@ export default function EditDivision({ division, activities }: { division: IDivi
                     <form ref={formRef} onSubmit={handleSubmit} className="w-full space-y-4 lg:w-2/3">
                         <div>
                             <h2 className="text-base font-semibold">Details</h2>
-                            <p className="text-sm text-muted-foreground">Division informations detail.</p>
+                            <p className="text-sm text-muted-foreground">Department informations detail.</p>
                             <div className="grid grid-cols-1 gap-4 pt-4 md:grid-cols-3">
                                 <div className="space-y-2 md:col-span-2">
                                     <Label>Name</Label>
@@ -85,8 +85,8 @@ export default function EditDivision({ division, activities }: { division: IDivi
                                     {errors.code && <p className="text-sm text-red-500">{errors.code}</p>}
                                 </div>
                                 <div className="space-y-2 md:col-span-2">
-                                    <Label>Company</Label>
-                                    <Input value={division.company.name} disabled />
+                                    <Label>Division</Label>
+                                    <Input value={`[${department.division.code}] ${department.division.name}`} disabled />
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Status</Label>

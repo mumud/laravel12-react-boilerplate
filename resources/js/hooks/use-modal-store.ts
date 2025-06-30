@@ -1,10 +1,14 @@
+import { IDepartment } from '@/types/department';
+import { IDivision } from '@/types/division';
 import { IPermission } from '@/types/permission';
 import { create } from 'zustand';
 
-export type ModalType = 'createPermission' | 'editPermission';
+export type ModalType = 'createPermission' | 'editPermission' | 'createDivision' | 'createDepartment';
 
 interface ModalData {
     permission?: IPermission;
+    division?: IDivision;
+    department?: IDepartment;
 }
 
 interface ModalStore {

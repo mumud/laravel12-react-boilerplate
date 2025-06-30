@@ -8,24 +8,24 @@ import { useLang } from '@/hooks/use-lang';
 import { useModal } from '@/hooks/use-modal-store';
 import AppLayout from '@/layouts/app-layout';
 import { BreadcrumbItem, PaginatedResponse } from '@/types';
-import { IDivision } from '@/types/division';
+import { IDepartment } from '@/types/department';
 import { IPermissionFlags } from '@/types/permission';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { FileText, MoreHorizontal, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
-type DivisionPagination = PaginatedResponse<IDivision>;
+type DepartmentPagination = PaginatedResponse<IDepartment>;
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'nav.organization', href: '#!' },
-    { title: 'nav.division', href: '/divisions' },
+    { title: 'nav.department', href: '/departments' },
 ];
 
-export default function Division() {
+export default function Department() {
     const { t } = useLang();
-    const { can, divisions, filters } = usePage<{
+    const { can, departments, filters } = usePage<{
         can: IPermissionFlags;
-        divisions: DivisionPagination;
+        departments: DepartmentPagination;
         filters: {
             search?: string;
             sort?: string;
@@ -50,17 +50,17 @@ export default function Division() {
     };
 
     const toggleSelectAll = () => {
-        if (selected.length === divisions.data.length) {
+        if (selected.length === departments.data.length) {
             setSelected([]);
         } else {
-            setSelected(divisions.data.map((c) => String(c.id)));
+            setSelected(departments.data.map((c) => String(c.id)));
         }
     };
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
-            route('divisions.index'),
+            route('departments.index'),
             {
                 search,
                 sort,
@@ -82,7 +82,7 @@ export default function Division() {
         setSort(field);
         setDirection(newDirection);
         router.get(
-            route('divisions.index'),
+            route('departments.index'),
             {
                 search,
                 sort,
@@ -101,39 +101,45 @@ export default function Division() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={t('division')} />
+            <Head title={t('department')} />
             <div className="flex flex-col gap-4">
                 <PageHeader
-                    title={t('division')}
-                    subtitle={t('division.description')}
+                    title={t('department')}
+                    subtitle={t('department.description')}
                     actions={
-                        <Button size="sm" onClick={() => onOpen('createDivision')}>
-                            <Plus className="mr-2 h-4 w-4" /> {t('division.add')}
+                        <Button size="sm" onClick={() => onOpen('createDepartment')}>
+                            <Plus className="mr-2 h-4 w-4" /> {t('department.add')}
                         </Button>
                     }
                 />
 
                 <div className="flex flex-col gap-4 px-4">
                     <DataTable
-                        data={divisions.data}
+                        data={departments.data}
                         columns={[
                             { accessor: 'code', label: t('code'), sortable: true },
                             { accessor: 'name', label: t('name'), sortable: true },
+                            {
+                                accessor: 'division',
+                                label: t('division'),
+                                sortable: true,
+                                render: (row) => `[${row.division?.code}] ${row.division?.name}`,
+                            },
                             { accessor: 'description', label: t('description'), sortable: true },
                         ]}
                         enableSelection
                         selected={selected}
                         onSelect={toggleSelect}
                         onSelectAll={toggleSelectAll}
-                        sort={sort as keyof IDivision}
+                        sort={sort as keyof IDepartment}
                         direction={direction}
                         onSort={handleSort}
                         getRowId={(row) => String(row.id)}
-                        emptyMessage="No divisions found."
+                        emptyMessage="No departments found."
                         actions={(row) => (
                             <div className="flex gap-1">
                                 {can.update && (
-                                    <Link href={route('divisions.edit', row.id)}>
+                                    <Link href={route('departments.edit', row.id)}>
                                         <Button variant="outline" size="sm">
                                             <Pencil className="h-4 w-4" /> Edit
                                         </Button>
@@ -146,10 +152,10 @@ export default function Division() {
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
                                         }
-                                        title="Delete Division"
+                                        title="Delete Department"
                                         description={`Are you sure you want to delete "${row.name}"? This action cannot be undone.`}
                                         confirmText="Yes, Delete"
-                                        onConfirm={() => router.delete(`divisions/${row.id}`)}
+                                        onConfirm={() => router.delete(`departments/${row.id}`)}
                                     />
                                 )}
                             </div>
@@ -159,9 +165,27 @@ export default function Division() {
                         onSearch={handleSearch}
                         onClearSearch={() => {
                             setSearch('');
-                            router.get(route('divisions.index'), {}, { preserveScroll: true });
+                            router.get(route('departments.index'), {}, { preserveScroll: true });
                         }}
                         onReload={() => router.reload({ preserveUrl: true })}
+                        filterFields={[
+                            {
+                                label: t('code'),
+                                value: 'code',
+                            },
+                            {
+                                label: t('name'),
+                                value: 'name',
+                            },
+                            {
+                                label: t('division.code'),
+                                value: 'division.code',
+                            },
+                            {
+                                label: t('division.name'),
+                                value: 'division.name',
+                            },
+                        ]}
                         filterField={filterField}
                         setFilterField={setFilterField}
                         filterOperator={filterOperator}
@@ -172,7 +196,7 @@ export default function Division() {
                             setFilterField('');
                             setFilterOperator('');
                             setFilterValue('');
-                            router.get(route('divisions.index'), { search });
+                            router.get(route('departments.index'), { search });
                         }}
                         filterActive={!!(filterField && filterOperator && filterValue)}
                         bulkDropdown={
@@ -194,7 +218,7 @@ export default function Division() {
                                                 confirmText="Yes, Delete"
                                                 onConfirm={() => {
                                                     selected.forEach((id) => {
-                                                        router.delete(`divisions/${id}`, { preserveScroll: true });
+                                                        router.delete(`departments/${id}`, { preserveScroll: true });
                                                     });
                                                     setSelected([]);
                                                 }}
@@ -211,7 +235,7 @@ export default function Division() {
                             </DropdownMenu>
                         }
                     />
-                    <Pagination links={divisions.links} />
+                    <Pagination links={departments.links} />
                 </div>
             </div>
         </AppLayout>

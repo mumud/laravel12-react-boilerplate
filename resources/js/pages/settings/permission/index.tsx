@@ -3,27 +3,25 @@ import DataTable from '@/components/data-table';
 import { PageHeader } from '@/components/page-header';
 import Pagination from '@/components/pagination';
 import { Button } from '@/components/ui/button';
-import { useLang } from '@/hooks/use-lang';
+import { useModal } from '@/hooks/use-modal-store';
 import AppLayout from '@/layouts/app-layout';
-import { BreadcrumbItem, PaginatedResponse } from '@/types';
-import { ICompany } from '@/types/company';
-import { IPermissionFlags } from '@/types/permission';
-import { Head, Link, router, usePage } from '@inertiajs/react';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { PaginatedResponse, type BreadcrumbItem } from '@/types';
+import { IPermission, IPermissionFlags } from '@/types/permission';
+import { Head, router, usePage } from '@inertiajs/react';
+import { EditIcon, PlusIcon, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
-type CompanyPagination = PaginatedResponse<ICompany>;
+type PermissionPagination = PaginatedResponse<IPermission>;
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'nav.organization', href: '#!' },
-    { title: 'nav.company', href: '/companies' },
+    { title: 'Settings', href: '#!' },
+    { title: 'Permission', href: '/permissions' },
 ];
 
-export default function Company() {
-    const { t } = useLang();
-    const { can, companies, filters } = usePage<{
+export default function Permission() {
+    const { can, permissions, filters } = usePage<{
         can: IPermissionFlags;
-        companies: CompanyPagination;
+        permissions: PermissionPagination;
         filters: {
             search?: string;
             sort?: string;
@@ -33,6 +31,7 @@ export default function Company() {
             filterValue?: string;
         };
     }>().props;
+    const { onOpen } = useModal();
 
     const [search, setSearch] = useState(filters.search || '');
     const [sort, setSort] = useState(filters.sort || '');
@@ -44,7 +43,7 @@ export default function Company() {
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         router.get(
-            route('companies.index'),
+            route('permissions.index'),
             {
                 search,
                 sort,
@@ -66,7 +65,7 @@ export default function Company() {
         setSort(field);
         setDirection(newDirection);
         router.get(
-            route('companies.index'),
+            route('permissions.index'),
             {
                 search,
                 sort,
@@ -85,38 +84,37 @@ export default function Company() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title={t('company')} />
+            <Head title="Permission" />
             <div className="flex flex-col gap-4">
                 <PageHeader
-                    title={t('company')}
-                    subtitle={t('company.description')}
+                    title="Permission"
+                    subtitle="Manage permissions"
                     actions={
-                        <Button size="sm" onClick={() => {}}>
-                            <Plus className="mr-2 h-4 w-4" /> {t('company.add')}
+                        <Button size="sm" onClick={() => onOpen('createPermission')}>
+                            <PlusIcon className="h-4 w-4" /> Add Permission
                         </Button>
                     }
                 />
 
                 <div className="flex flex-col gap-4 px-4">
                     <DataTable
-                        data={companies.data}
+                        data={permissions.data}
                         columns={[
-                            { accessor: 'code', label: t('code'), sortable: true },
-                            { accessor: 'name', label: t('name'), sortable: true },
+                            { label: 'Name', accessor: 'name', sortable: true },
+                            { label: 'Description', accessor: 'description', sortable: true },
+                            { label: 'Guard Name', accessor: 'guard_name', sortable: true },
                         ]}
-                        sort={sort as keyof ICompany}
+                        sort={sort as keyof IPermission}
                         direction={direction}
                         onSort={handleSort}
                         getRowId={(row) => String(row.id)}
-                        emptyMessage={t('no_companies_found')}
-                        actions={(row) => (
-                            <div className="flex gap-1">
+                        emptyMessage="No permissions found."
+                        actions={(item) => (
+                            <div className="flex gap-2">
                                 {can.update && (
-                                    <Link href={route('companies.edit', row.id)}>
-                                        <Button variant="outline" size="sm">
-                                            <Pencil className="h-4 w-4" /> Edit
-                                        </Button>
-                                    </Link>
+                                    <Button size="sm" variant="outline" onClick={() => onOpen('editPermission', { permission: item })}>
+                                        <EditIcon /> Edit
+                                    </Button>
                                 )}
                                 {can.delete && (
                                     <ConfirmDialog
@@ -125,10 +123,10 @@ export default function Company() {
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
                                         }
-                                        title={t('delete.company')}
-                                        description={`Are you sure you want to delete "${row.name}"? This action cannot be undone.`}
-                                        confirmText={t('delete.confirm')}
-                                        onConfirm={() => router.delete(`companies/${row.id}`)}
+                                        title="Delete Permission"
+                                        description={`Are you sure you want to delete "${item.name}"? This action cannot be undone.`}
+                                        confirmText="Yes, Delete"
+                                        onConfirm={() => router.delete(`permissions/${item.id}`)}
                                     />
                                 )}
                             </div>
@@ -138,7 +136,7 @@ export default function Company() {
                         onSearch={handleSearch}
                         onClearSearch={() => {
                             setSearch('');
-                            router.get(route('companies.index'), {}, { preserveScroll: true });
+                            router.get(route('permissions.index'), {}, { preserveScroll: true });
                         }}
                         onReload={() => router.reload({ preserveUrl: true })}
                         filterField={filterField}
@@ -151,11 +149,11 @@ export default function Company() {
                             setFilterField('');
                             setFilterOperator('');
                             setFilterValue('');
-                            router.get(route('companies.index'), { search });
+                            router.get(route('permissions.index'), { search });
                         }}
                         filterActive={!!(filterField && filterOperator && filterValue)}
                     />
-                    <Pagination links={companies.links} />
+                    <Pagination links={permissions.links} />
                 </div>
             </div>
         </AppLayout>

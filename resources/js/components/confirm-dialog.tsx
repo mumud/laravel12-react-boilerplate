@@ -9,7 +9,6 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
 import { ReactNode, useState } from 'react';
@@ -34,27 +33,34 @@ export default function ConfirmDialog({
     const [open, setOpen] = useState(false);
 
     return (
-        <AlertDialog open={open} onOpenChange={setOpen}>
-            <AlertDialogTrigger asChild onClick={() => setOpen(true)}>
+        <>
+            <span
+                onClick={() => {
+                    // Delay untuk menghindari dropdown langsung nutup dialog
+                    setTimeout(() => setOpen(true), 100);
+                }}
+            >
                 {trigger}
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>{title}</AlertDialogTitle>
-                    <AlertDialogDescription>{description}</AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                    <AlertDialogCancel onClick={() => setOpen(false)}>{cancelText}</AlertDialogCancel>
-                    <AlertDialogAction
-                        onClick={() => {
-                            onConfirm();
-                            setOpen(false);
-                        }}
-                    >
-                        {confirmText}
-                    </AlertDialogAction>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+            </span>
+            <AlertDialog open={open} onOpenChange={setOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>{title}</AlertDialogTitle>
+                        <AlertDialogDescription>{description}</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setOpen(false)}>{cancelText}</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => {
+                                onConfirm();
+                                setOpen(false);
+                            }}
+                        >
+                            {confirmText}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     );
 }

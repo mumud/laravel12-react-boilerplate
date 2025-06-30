@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
-import { CreatePermissionModal } from '../modals/create-permission-modal';
-import { EditPermissionModal } from '../modals/edit-permission-modal';
+
+import { CreateDepartment } from '@/pages/organization/department/create';
+import { CreateDivision } from '@/pages/organization/division/create';
+import { CreatePermission } from '@/pages/settings/permission/create';
+import { EditPermission } from '@/pages/settings/permission/edit';
 
 const ModalProvider = () => {
     const [isMounted, setIsMounted] = useState(false);
@@ -13,8 +16,10 @@ const ModalProvider = () => {
 
     return (
         <>
-            <CreatePermissionModal />
-            <EditPermissionModal />
+            <CreatePermission />
+            <EditPermission />
+            <CreateDivision />
+            <CreateDepartment />
         </>
     );
 };

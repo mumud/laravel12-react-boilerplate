@@ -1,20 +1,25 @@
 <?php
 
-namespace Modules\Organization\Controllers;
+namespace App\Http\Controllers\Organizations;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Organizations\StoreDivisionRequest;
+use App\Http\Requests\Organizations\UpdateDivisionRequest;
+use App\Models\Organizations\Division;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Modules\Organization\Models\Division;
-use Modules\Organization\Requests\StoreDivisionRequest;
-use Modules\Organization\Requests\UpdateDivisionRequest;
+use Spatie\Activitylog\Models\Activity;
 
 class DivisionController extends Controller
 {
     public function index(Request $request): Response
     {
+        if (!$request->user()->can('view division')) {
+            abort(403, 'Unauthorized');
+        }
+
         $search = $request->input('search');
         $sort = $request->input('sort', 'created_at'); // default sort
         $direction = $request->input('direction', 'desc'); // default direction
@@ -60,6 +65,11 @@ class DivisionController extends Controller
                 'filterOperator' => $filterOperator,
                 'filterValue' => $filterValue,
             ],
+            'can' => [
+                'create' => $request->user()->can('create division'),
+                'update' => $request->user()->can('update division'),
+                'delete' => $request->user()->can('delete division'),
+            ],
         ]);
     }
 
@@ -76,8 +86,17 @@ class DivisionController extends Controller
 
     public function edit(Division $division): Response
     {
+        $division->load('company');
+
+        $activities = Activity::where('subject_type', Division::class)
+            ->where('subject_id', $division->id)
+            ->latest()
+            ->take(5)
+            ->get();
+
         return Inertia::render('organization/division/edit', [
             'division' => $division,
+            'activities' => $activities,
         ]);
     }
 
@@ -91,5 +110,14 @@ class DivisionController extends Controller
     {
         $division->delete();
         return redirect()->route('divisions.index')->with('success', 'Division deleted.');
+    }
+
+    public function options()
+    {
+        $divisions = Division::select('id', 'name', 'code')->orderBy('name')->get();
+
+        return response()->json([
+            'divisions' => $divisions,
+        ]);
     }
 }
