@@ -16,7 +16,7 @@ class DepartmentController extends Controller
 {
     public function index(Request $request): Response
     {
-        if (!$request->user()->can('view department')) {
+        if (!$request->user()->can('department.view')) {
             abort(403, 'Unauthorized');
         }
 
@@ -96,9 +96,9 @@ class DepartmentController extends Controller
                 'filterValue' => $filterValue,
             ],
             'can' => [
-                'create' => $request->user()->can('create department'),
-                'update' => $request->user()->can('update department'),
-                'delete' => $request->user()->can('delete department'),
+                'create' => $request->user()->can('department.create'),
+                'update' => $request->user()->can('department.update'),
+                'delete' => $request->user()->can('department.delete'),
             ],
         ]);
     }

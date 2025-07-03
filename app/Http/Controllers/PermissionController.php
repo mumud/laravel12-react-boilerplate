@@ -15,7 +15,7 @@ class PermissionController extends Controller
      */
     public function index(Request $request): Response
     {
-        if (!$request->user()->can('view permission')) {
+        if (!$request->user()->can('permission.view')) {
             abort(403, 'Unauthorized');
         }
 
@@ -65,9 +65,9 @@ class PermissionController extends Controller
                 'filterValue' => $filterValue,
             ],
             'can' => [
-                'create' => $request->user()->can('create permission'),
-                'update' => $request->user()->can('update permission'),
-                'delete' => $request->user()->can('delete permission'),
+                'create' => $request->user()->can('permission.create'),
+                'update' => $request->user()->can('permission.update'),
+                'delete' => $request->user()->can('permission.delete'),
             ],
         ]);
     }

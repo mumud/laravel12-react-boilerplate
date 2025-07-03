@@ -16,7 +16,7 @@ class DivisionController extends Controller
 {
     public function index(Request $request): Response
     {
-        if (!$request->user()->can('view division')) {
+        if (!$request->user()->can('division.view')) {
             abort(403, 'Unauthorized');
         }
 
@@ -66,9 +66,9 @@ class DivisionController extends Controller
                 'filterValue' => $filterValue,
             ],
             'can' => [
-                'create' => $request->user()->can('create division'),
-                'update' => $request->user()->can('update division'),
-                'delete' => $request->user()->can('delete division'),
+                'create' => $request->user()->can('division.create'),
+                'update' => $request->user()->can('division.update'),
+                'delete' => $request->user()->can('division.delete'),
             ],
         ]);
     }

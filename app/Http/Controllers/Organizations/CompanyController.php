@@ -15,7 +15,7 @@ class CompanyController extends Controller
 {
     public function index(Request $request): Response
     {
-        if (!$request->user()->can('view company')) {
+        if (!$request->user()->can('company.view')) {
             abort(403, 'Unauthorized');
         }
 
@@ -65,9 +65,9 @@ class CompanyController extends Controller
                 'filterValue' => $filterValue,
             ],
             'can' => [
-                'create' => $request->user()->can('create company'),
-                'update' => $request->user()->can('update company'),
-                'delete' => $request->user()->can('delete company'),
+                'create' => $request->user()->can('company.create'),
+                'update' => $request->user()->can('company.update'),
+                'delete' => $request->user()->can('company.delete'),
             ],
         ]);
     }
