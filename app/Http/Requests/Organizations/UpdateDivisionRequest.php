@@ -12,7 +12,7 @@ class UpdateDivisionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('update division');
+        return $this->user()?->can('division.update');
     }
 
     /**

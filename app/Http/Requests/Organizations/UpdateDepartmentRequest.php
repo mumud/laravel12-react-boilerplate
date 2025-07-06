@@ -12,7 +12,7 @@ class UpdateDepartmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('update department');
+        return $this->user()?->can('department.update');
     }
 
     /**

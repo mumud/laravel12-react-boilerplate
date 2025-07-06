@@ -47,7 +47,7 @@ export default function EditDepartment({ department, activities }: { department:
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Edit Department" />
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 pb-4">
                 <div className="flex items-center justify-between border-b px-4 py-2">
                     <div>
                         <h1 className="text-lg font-bold">

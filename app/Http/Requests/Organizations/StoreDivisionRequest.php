@@ -11,7 +11,7 @@ class StoreDivisionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('create division');
+        return $this->user()?->can('division.create');
     }
 
     /**
